@@ -1,0 +1,105 @@
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Scanner;
+
+class Paciente {
+    String nomeCompleto;
+    String telefone;
+    String telefoneAgente;
+    String nomeUBS;
+    OCI oci;
+
+    public Paciente(String nomeCompleto, String telefone, String telefoneAgente, String nomeUBS, OCI oci) {
+        this.nomeCompleto = nomeCompleto;
+        this.telefone = telefone;
+        this.telefoneAgente = telefoneAgente;
+        this.nomeUBS = nomeUBS;
+        this.oci = oci;
+    }
+
+    public void mostrarDados() {
+        System.out.println("Paciente: " + nomeCompleto);
+        System.out.println("Telefone: " + telefone);
+        System.out.println("Telefone do Agente: " + telefoneAgente);
+        System.out.println("UBS: " + nomeUBS);
+        System.out.println("OCI: " + oci.nomeOCI);
+        System.out.println("Tipo: " + oci.tipoOCI);
+        System.out.println("Data de Início: " + oci.dataInicio);
+        System.out.println("Data Limite: " + oci.dataLimite);
+    }
+}
+
+class OCI {
+    String numeroOCI;
+    String nomeOCI;
+    String tipoOCI; // "Geral" ou "Oncológica"
+    LocalDate dataInicio;
+    LocalDate dataLimite;
+
+    public OCI(String numeroOCI, String tipoOCI, LocalDate dataInicio) {
+        this.numeroOCI = numeroOCI;
+        this.tipoOCI = tipoOCI;
+        this.dataInicio = dataInicio;
+        this.nomeOCI = "Procedimentos - " + tipoOCI;
+        this.dataLimite = calcularDataLimite();
+    }
+
+    private LocalDate calcularDataLimite() {
+        if ("Oncológica".equalsIgnoreCase(tipoOCI)) {
+            return dataInicio.with(TemporalAdjusters.lastDayOfMonth());
+        } else if ("Geral".equalsIgnoreCase(tipoOCI)) {
+            return dataInicio.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+        } else {
+            throw new IllegalArgumentException("Tipo de OCI inválido: " + tipoOCI);
+        }
+    }
+}
+
+public class SistemaOCI {
+
+    public static void main(String[] args) {
+        try (Scanner scanner = new Scanner(System.in)) {
+
+            System.out.println("Cadastro de Paciente");
+
+            System.out.print("Nome completo: ");
+            String nome = scanner.nextLine();
+
+            System.out.print("Telefone: ");
+            String telefone = scanner.nextLine();
+
+            System.out.print("Telefone do agente de saúde: ");
+            String telefoneAgente = scanner.nextLine();
+
+            System.out.print("Nome da UBS: ");
+            String ubs = scanner.nextLine();
+
+            System.out.print("Número da OCI: ");
+            String numeroOCI = scanner.nextLine();
+
+            System.out.print("Tipo de OCI (Geral/Oncológica): ");
+            String tipoOCI = scanner.nextLine();
+
+            System.out.print("Data de Início (AAAA-MM-DD): ");
+            String dataStr = scanner.nextLine();
+            LocalDate dataInicio;
+
+            try {
+                dataInicio = LocalDate.parse(dataStr);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Data inválida. Use o formato AAAA-MM-DD.");
+            }
+
+            OCI oci = new OCI(numeroOCI, tipoOCI, dataInicio);
+            Paciente paciente = new Paciente(nome, telefone, telefoneAgente, ubs, oci);
+
+            System.out.println("\nCadastro realizado com sucesso!");
+            paciente.mostrarDados();
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erro de entrada: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Erro inesperado: " + e.getMessage());
+        }
+    }
+}
