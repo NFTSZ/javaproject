@@ -7,46 +7,59 @@ public class SistemaOCI {
     private BaseOCI baseOCI = new BaseOCI();
 
     public void cadastrarPaciente(Scanner scanner) {
-        System.out.println("\n=== CADASTRO DE PACIENTE ===");
+        try {
+            System.out.println("\n=== CADASTRO DE PACIENTE ===");
 
-        System.out.print("Nome do paciente: ");
-        String nome = scanner.nextLine();
+            System.out.print("Nome do paciente: ");
+            String nome = scanner.nextLine();
+            TratadorExcecoes.validarNaoVazio("Nome", nome);
 
-        System.out.print("CPF do paciente: ");
-        String cpf = scanner.nextLine();
+            System.out.print("CPF do paciente: ");
+            String cpf = scanner.nextLine();
+            TratadorExcecoes.validarCPF(cpf);
 
-        System.out.print("Telefone pessoal: ");
-        String telefonePessoal = scanner.nextLine();
+            System.out.print("Telefone pessoal: ");
+            String telefonePessoal = scanner.nextLine();
+            TratadorExcecoes.validarNaoVazio("Telefone pessoal", telefonePessoal);
 
-        System.out.print("Nome do agente de saúde: ");
-        String nomeAgente = scanner.nextLine();
+            System.out.print("Nome do agente de saúde: ");
+            String nomeAgente = scanner.nextLine();
+            TratadorExcecoes.validarNaoVazio("Nome do agente de saúde", nomeAgente);
 
-        System.out.print("Nome da UBS: ");
-        String nomeUBS = scanner.nextLine();
+            System.out.print("Nome da UBS: ");
+            String nomeUBS = scanner.nextLine();
+            TratadorExcecoes.validarNaoVazio("Nome da UBS", nomeUBS);
 
-        System.out.print("Telefone da UBS: ");
-        String telefoneUBS = scanner.nextLine();
+            System.out.print("Telefone da UBS: ");
+            String telefoneUBS = scanner.nextLine();
+            TratadorExcecoes.validarNaoVazio("Telefone da UBS", telefoneUBS);
 
-        Contato contato = new Contato(telefonePessoal, nomeAgente, telefoneUBS, nomeUBS);
+            Contato contato = new Contato(telefonePessoal, nomeAgente, telefoneUBS, nomeUBS);
 
-        System.out.println("\n=== DADOS DA OCI ===");
-        System.out.print("Número da OCI: ");
-        String numeroOCI = scanner.nextLine();
+            System.out.println("\n=== DADOS DA OCI ===");
+            System.out.print("Número da OCI: ");
+            String numeroOCI = scanner.nextLine();
+            TratadorExcecoes.validarNaoVazio("Número da OCI", numeroOCI);
 
-        System.out.print("Data de início da OCI (AAAA-MM-DD): ");
-        LocalDate dataInicio = LocalDate.parse(scanner.nextLine());
+            System.out.print("Data de início da OCI (AAAA-MM-DD): ");
+            String dataInicioStr = scanner.nextLine();
+            LocalDate dataInicio = TratadorExcecoes.validarData(dataInicioStr);
 
-        OCI oci = baseOCI.buscarOCI(numeroOCI, dataInicio);
+            OCI oci = baseOCI.buscarOCI(numeroOCI, dataInicio);
 
-        if (oci == null) {
-            System.out.println("Número da OCI não encontrado.");
-            return;
+            if (oci == null) {
+                System.out.println("Número da OCI não encontrado.");
+                return;
+            }
+
+            Paciente paciente = new Paciente(nome, cpf, contato, oci);
+            pacientes.add(paciente);
+
+            paciente.exibirResumoCadastro();
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Erro no cadastro: " + e.getMessage());
         }
-
-        Paciente paciente = new Paciente(nome, cpf, contato, oci);
-        pacientes.add(paciente);
-
-        paciente.exibirResumoCadastro();
     }
 
     public void listarPacientes() {
@@ -286,4 +299,5 @@ public class SistemaOCI {
         }
         return null;
     }
+
 }
