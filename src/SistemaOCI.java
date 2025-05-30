@@ -20,7 +20,7 @@ public class SistemaOCI {
 
             System.out.print("Telefone pessoal: ");
             String telefonePessoal = scanner.nextLine();
-            TratadorExcecoes.validarNaoVazio("Telefone pessoal", telefonePessoal);
+           TratadorExcecoes.validarNaoVazio("Telefone pessoal", telefonePessoal);
 
             System.out.print("Nome do agente de saúde: ");
             String nomeAgente = scanner.nextLine();
